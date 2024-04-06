@@ -12,7 +12,7 @@ Este documento descreve a implementação de um projeto de infraestrutura e micr
 - Client-side Load Balancer: Integração com Eureka para balanceamento de carga.
 - Monitoramento e Rastreamento: Uso do Zipkin para rastreamento distribuído.
 
-<img src=" capturas-de-telas /eureka.png" width="100%" height="100%">
+<img src="capturas-de-telas/eureka.png" width="100%" height="100%">
 
 *Figura 1: Registro de serviço Eureka mostrando o status dos microserviços*
 
