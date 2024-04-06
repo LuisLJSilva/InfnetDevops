@@ -115,7 +115,7 @@ O teste foi executado com sucesso, e os resultados foram analisados utilizando o
 
 <img src="capturas-de-telas/jenkins.png" width="100%" height="100%">
 
-*Figura 14: Sucesso na execução da pipeline Jenkins*
+*Figura 13: Sucesso na execução da pipeline Jenkins*
 
 ## Resiliência e Segurança
 - Implementação de Circuit Breaker e Retry com Resilience4j.
