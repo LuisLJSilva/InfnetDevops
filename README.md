@@ -33,7 +33,7 @@ Este documento descreve a implementação de um projeto de infraestrutura e micr
 ## Docker Hub Images
 As imagens Docker foram construídas com as configurações necessárias para cada serviço do nosso sistema de microserviços e publicadas no Docker Hub. Estas imagens são então usadas pelo Kubernetes para implantar cada serviço no cluster.
 
-<img src=" capturas-de-telas /dockerhub.png" width="100%" height="100%">
+<img src="capturas-de-telas/dockerhub.png" width="100%" height="100%">
 
 *Figura 2: Exemplo das imagens disponíveis no Docker Hub que são usadas pelo Kubernetes*
 
@@ -41,49 +41,49 @@ As imagens Docker foram construídas com as configurações necessárias para ca
 ### Criação do Namespace
 - O namespace devops-course foi criado para isolar os recursos do projeto dentro do cluster Kubernetes.
 
-<img src=" capturas-de-telas /yaml.png" width="100%" height="100%">
+<img src="capturas-de-telas/yaml.png" width="100%" height="100%">
 
 *Figura 3: Exemplo do arquivo .yaml com todas as configurações de deployments e services disponíveis usadas pelo Kubernetes*
 
 ### Deployments e Services
 - Foram implementados Deployments e Services para cada componente do sistema, garantindo sua comunicação e funcionamento correto. O Api-Gateway foi configurado com quatro réplicas para assegurar a alta disponibilidade.
 
-<img src=" capturas-de-telas /replica.png" width="100%" height="100%">
+<img src="capturas-de-telas/replica.png" width="100%" height="100%">
 
 *Figura 4: Exemplo de configuração do api-gateway deployment usando 4 replicas*
 
 ### Probes de Saúde
 - Readiness e Liveness probes foram adicionadas aos microserviços para assegurar que o tráfego seja direcionado apenas para instâncias saudáveis e que instâncias com falhas sejam reiniciadas automaticamente.
 
-<img src=" capturas-de-telas /probe.png" width="100%" height="100%">
+<img src="capturas-de-telas/probe.png" width="100%" height="100%">
 
 *Figura 5: Exemplo de configuração do Readiness e Liveness*
 
 ### Monitoramento e Visualização
 - ConfigMaps foram utilizados para definir as dashboards do Grafana, permitindo visualizar métricas importantes como contagem de threads, uso de CPU e memória.
 
-<img src=" capturas-de-telas /mapgrafana.png" width="100%" height="100%">
+<img src="capturas-de-telas/mapgrafana.png" width="100%" height="100%">
 
 *Figura 6: Exemplo de configuração do configMap para o Grafana*
 
 ### Banco de Dados
 - Um deployment do PostgreSQL foi configurado juntamente com um serviço NodePort, permitindo acesso externo para fins de administração e desenvolvimento.
 
-<img src=" capturas-de-telas /postgres.png" width="100%" height="100%">
+<img src="capturas-de-telas/postgres.png" width="100%" height="100%">
 
 *Figura 7: Exemplo de configuração do deployment e service para o Postgres*
 
 ### Rastreamento Distribuído
 - O Zipkin foi implantado para permitir o rastreamento das requisições entre os serviços, facilitando o diagnóstico de problemas.
 
-<img src=" capturas-de-telas /zipkin.png" width="100%" height="100%">
+<img src="capturas-de-telas/zipkin.png" width="100%" height="100%">
 
 *Figura 8: Rastreamento do Zipkin para sistemas distribuídos*
 
 ### Coleta de Métricas
 - O Prometheus foi configurado para coletar métricas dos microserviços, utilizando o modelo de push para a coleta.
 
-<img src=" capturas-de-telas /prometheus.png" width="100%" height="100%">
+<img src="capturas-de-telas/prometheus.png" width="100%" height="100%">
 
 *Figura 9: Interface do Prometheus para monitoramento de métricas dos microserviços*
 
@@ -97,9 +97,9 @@ O teste GetAllProdutos foi configurado para fazer requisições GET para o endpo
 ### Execução e Resultados
 O teste foi executado com sucesso, e os resultados foram analisados utilizando os listeners internos do JMeter, como a Árvore de Resultados e o Relatório de Resumo, para verificar as respostas e os tempos de resposta. Além disso, os resultados foram visualizados no Grafana para monitorar as métricas em tempo real.
 
-<img src=" capturas-de-telas /jmeter.png" width="100%" height="100%">
-<img src=" capturas-de-telas /jmeter1.png" width="100%" height="100%">
-<img src=" capturas-de-telas /jmeter2.png" width="100%" height="100%">
+<img src="capturas-de-telas/jmeter.png" width="100%" height="100%">
+<img src="capturas-de-telas/jmeter1.png" width="100%" height="100%">
+<img src="capturas-de-telas/jmeter2.png" width="100%" height="100%">
 
 *Figuras 10, 11 e 12: Testes com JMeter*
 
@@ -123,7 +123,7 @@ A pipeline foi definida como código usando o Jenkinsfile e armazenada no reposi
 ## Monitoramento
 - Monitoramento de métricas com Prometheus e visualização no Grafana.
 
-<img src=" capturas-de-telas /grafana.png" width="100%" height="100%">
+<img src="capturas-de-telas/grafana.png" width="100%" height="100%">
 
 *Figura 7: Dashboard do Grafana visualizando métricas dos serviços*
 
