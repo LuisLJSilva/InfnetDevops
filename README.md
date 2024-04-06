@@ -105,17 +105,17 @@ O teste foi executado com sucesso, e os resultados foram analisados utilizando o
 
 ### Integração Contínua com Jenkins
 
-- Para automatizar o processo de build e deploy dos microserviços, foi utilizado o Jenkins, uma ferramenta de integração contínua. Uma pipeline de CI/CD simples foi criada para automatizar a compilação, os testes e o deployment dos serviços quando novos commits são feitos no repositório de código.
+- Utilizamos o Jenkins para orquestrar o processo de integração contínua e deploy contínuo dos microserviços. Com uma pipeline de CI/CD configurada, o Jenkins automatiza a compilação, teste e deployment dos serviços a cada novo commit no repositório de código.
 
 #### Configuração da Pipeline
 - A pipeline foi configurada com os seguintes passos:
 
-Checkout: Recuperar o código mais recente do repositório Git.
-Build: Construir os artefatos usando Maven.
-Test: Executar testes automatizados.
-Docker Build e Push: Construir a imagem Docker para o serviço e enviar para o Docker Hub.
-Deploy no Kubernetes: Atualizar o serviço no Kubernetes com a nova imagem.
-A pipeline foi definida como código usando o Jenkinsfile e armazenada no repositório de código para versionamento e fácil manutenção.
+- Setar Kubeconfig: Define a variável de ambiente com o caminho do kubeconfig para autenticação no cluster Kubernetes.
+- Deploy no Kubernetes: Executa o comando kubectl apply -f com o arquivo YAML de deployment para atualizar os serviços no cluster Kubernetes.
+
+<img src="capturas-de-telas/jenkins.png" width="100%" height="100%">
+
+*Figura 14: Sucesso na execução da pipeline Jenkins*
 
 ## Resiliência e Segurança
 - Implementação de Circuit Breaker e Retry com Resilience4j.
@@ -125,7 +125,7 @@ A pipeline foi definida como código usando o Jenkinsfile e armazenada no reposi
 
 <img src="capturas-de-telas/grafana.png" width="100%" height="100%">
 
-*Figura 7: Dashboard do Grafana visualizando métricas dos serviços*
+*Figura 14: Dashboard do Grafana visualizando métricas dos serviços*
 
 ## Conclusão
 Este projeto demonstrou a eficácia da utilização de contêineres e orquestração para gerenciar um sistema complexo de microserviços. Com o uso do Kubernetes, foi possível garantir a disponibilidade e escalabilidade dos serviços. O Prometheus e o Grafana forneceram as ferramentas necessárias para monitorar a saúde e o desempenho do sistema, enquanto o Zipkin permitiu o rastreamento distribuído eficiente.
