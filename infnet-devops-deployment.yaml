@@ -1,0 +1,977 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: devops-course
+---
+# Api Gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+  namespace: devops-course
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: luisdjay/devops_infnet:api-gateway
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "512Mi"  # Valor mínimo de memória que o Kubernetes tentará garantir para o container.
+            cpu: "500m"
+          limits:
+            memory: "2048Mi"  # Limite máximo de memória que o container pode usar.
+            cpu: "1000m"
+        ports:
+        - containerPort: 9091
+---
+# Api Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway-service
+  namespace: devops-course
+spec:
+  type: NodePort 
+  selector:
+    app: api-gateway
+  ports:
+    - protocol: TCP
+      port: 9091
+      targetPort: 9091
+      nodePort: 30091
+---
+# Eureka Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eureka-deployment
+  namespace: devops-course
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eureka
+  template:
+    metadata:
+      labels:
+        app: eureka
+    spec:
+      containers:
+      - name: eureka
+        image: luisdjay/devops_infnet:eureka
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 8761
+---
+# Eureka Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka-service
+  namespace: devops-course
+spec:
+  type: NodePort 
+  selector:
+    app: eureka
+  ports:
+    - protocol: TCP
+      port: 8761
+      targetPort: 8761
+      nodePort: 30761
+---
+# Produto Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: produto-deployment
+  namespace: devops-course
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: produto-service
+  template:
+    metadata:
+      labels:
+        app: produto-service
+    spec:
+      containers:
+      - name: produto-service
+        image: luisdjay/devops_infnet:produto-service
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "512Mi" 
+            cpu: "500m"
+          limits:
+            memory: "2048Mi"  
+            cpu: "1000m"
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+---
+# Produto Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: produto-service
+  namespace: devops-course
+spec:
+  type: NodePort 
+  selector:
+    app: produto-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080
+---
+# Venda Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: venda-deployment
+  namespace: devops-course
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: venda-service
+  template:
+    metadata:
+      labels:
+        app: venda-service
+    spec:
+      containers:
+      - name: venda-service
+        image: luisdjay/devops_infnet:venda-service
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2048Mi"
+            cpu: "1000m"
+        ports:
+        - containerPort: 8087
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8087
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8087
+          initialDelaySeconds: 10
+          periodSeconds: 5
+---
+# Venda Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: venda-service
+  namespace: devops-course
+spec:
+  type: NodePort 
+  selector:
+    app: venda-service
+  ports:
+    - protocol: TCP
+      port: 8087
+      targetPort: 8087
+---
+# ConfigMap para o dashboard do Grafana
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-config
+  namespace: devops-course
+data:
+  my-dashboard.json: |
+    {
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 7,
+    "links": [],
+    "panels": [
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "edhxai9mv25mof"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 0
+            },
+            "id": 4,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "edhxai9mv25mof"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "builder",
+                    "expr": "executor_active_threads{instance=\"produto-service.devops-course.svc.cluster.local:8080\"}",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A",
+                    "useBackend": false
+                },
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "edhxai9mv25mof"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "builder",
+                    "expr": "executor_active_threads{instance=\"venda-service.devops-course.svc.cluster.local:8087\"}",
+                    "fullMetaSearch": false,
+                    "hide": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "B",
+                    "useBackend": false
+                }
+            ],
+            "title": "Contagem de Threads",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "edhxai9mv25mof"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "id": 1,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "edhxai9mv25mof"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "builder",
+                    "expr": "process_uptime_seconds{instance=\"produto-service.devops-course.svc.cluster.local:8080\"}",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A",
+                    "useBackend": false
+                },
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "edhxai9mv25mof"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "builder",
+                    "expr": "process_uptime_seconds{instance=\"venda-service.devops-course.svc.cluster.local:8087\"}",
+                    "fullMetaSearch": false,
+                    "hide": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "B",
+                    "useBackend": false
+                }
+            ],
+            "title": "Uptime",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "edhxai9mv25mof"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 8
+            },
+            "id": 3,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "edhxai9mv25mof"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "builder",
+                    "expr": "process_cpu_usage{instance=\"produto-service.devops-course.svc.cluster.local:8080\"}",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A",
+                    "useBackend": false
+                },
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "edhxai9mv25mof"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "builder",
+                    "expr": "process_cpu_usage{instance=\"venda-service.devops-course.svc.cluster.local:8087\"}",
+                    "fullMetaSearch": false,
+                    "hide": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "B",
+                    "useBackend": false
+                }
+            ],
+            "title": "Uso de CPU",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "edhxai9mv25mof"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 0,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 8
+            },
+            "id": 2,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "edhxai9mv25mof"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "builder",
+                    "expr": "jvm_buffer_memory_used_bytes{instance=\"produto-service.devops-course.svc.cluster.local:8080\"}",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A",
+                    "useBackend": false
+                },
+                {
+                    "datasource": {
+                        "type": "prometheus",
+                        "uid": "edhxai9mv25mof"
+                    },
+                    "disableTextWrap": false,
+                    "editorMode": "builder",
+                    "expr": "jvm_buffer_memory_used_bytes{instance=\"venda-service.devops-course.svc.cluster.local:8087\"}",
+                    "fullMetaSearch": false,
+                    "hide": false,
+                    "includeNullMetadata": true,
+                    "instant": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "B",
+                    "useBackend": false
+                }
+            ],
+            "title": "Memória",
+            "type": "timeseries"
+        }
+    ],
+    "refresh": "",
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "2024-04-06T12:54:17.197Z",
+        "to": "2024-04-06T14:41:30.531Z"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "Dashboard Devops",
+    "uid": "edhxcboaysav4a",
+    "version": 1,
+    "weekStart": ""
+    }
+
+---
+# Grafana Deployment (usando imagem oficial, sem customizações)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-deployment
+  namespace: devops-course
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      volumes:
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: dashboard-volume
+          configMap:
+            name: grafana-dashboard-config
+      containers:
+      - name: grafana
+        volumeMounts:
+          - mountPath: "/var/lib/grafana"
+            name: grafana-storage
+          - mountPath: "/etc/grafana/provisioning/dashboards"
+            name: dashboard-volume
+        image: grafana/grafana
+        resources:
+          requests:
+            memory: "512Mi" 
+            cpu: "500m"
+          limits:
+            memory: "2048Mi" 
+            cpu: "1000m"
+        ports:
+        - containerPort: 3000
+---
+# Grafana Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: devops-course
+spec:
+  type: NodePort 
+  selector:
+    app: grafana
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30000
+---
+# Grafana PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: grafana-pvc
+  namespace: devops-course
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Postgres Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  namespace: devops-course
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres
+        resources:
+          requests:
+            memory: "512Mi"  # Valor mínimo de memória que o Kubernetes tentará garantir para o container.
+            cpu: "500m"
+          limits:
+            memory: "2048Mi"  # Limite máximo de memória que o container pode usar.
+            cpu: "1000m"
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "root"
+---
+# Postgres Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: devops-course
+spec:
+  type: NodePort 
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+# Zipkin Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin-deployment
+  namespace: devops-course
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin
+  template:
+    metadata:
+      labels:
+        app: zipkin
+    spec:
+      containers:
+      - name: zipkin
+        image: openzipkin/zipkin
+        resources:
+          requests:
+            memory: "512Mi"  
+            cpu: "500m"
+          limits:
+            memory: "2048Mi"  
+            cpu: "1000m"
+        ports:
+        - containerPort: 9411
+---
+# Zipkin Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin-service
+  namespace: devops-course
+spec:
+  type: NodePort
+  selector:
+    app: zipkin
+  ports:
+  - protocol: TCP
+    port: 9411
+    targetPort: 9411
+    nodePort: 30411
+---
+# Config Map Prometheus
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: devops-course
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: 'spring-actuator'
+        metrics_path: '/actuator/prometheus'
+        static_configs:
+          - targets: ['produto-service.devops-course.svc.cluster.local:8080']
+          - targets: ['venda-service.devops-course.svc.cluster.local:8087']
+
+---
+# Prometheus Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  namespace: devops-course
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v2.45.0
+        resources:
+          requests:
+            memory: "512Mi"  
+            cpu: "500m"
+          limits:
+            memory: "2048Mi"  
+            cpu: "1000m"
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+        - mountPath: "/prometheus"
+          name: prometheus-storage
+        - name: config-volume
+          mountPath: /etc/prometheus
+          readOnly: true
+      volumes:
+      - name: prometheus-storage
+        persistentVolumeClaim:
+          claimName: prometheus-pvc
+      - name: config-volume
+        configMap:
+          name: prometheus-config
+---
+# Prometheus Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: devops-course
+spec:
+  type: NodePort
+  selector:
+    app: prometheus
+  ports:
+  - protocol: TCP
+    port: 9090
+    targetPort: 9090
+    nodePort: 30090
+---
+# Prometheus PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-pvc
+  namespace: devops-course
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
