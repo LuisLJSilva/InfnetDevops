@@ -25,10 +25,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "512Mi"  # Valor mínimo de memória que o Kubernetes tentará garantir para o container.
+            memory: "512Mi"  
             cpu: "500m"
           limits:
-            memory: "2048Mi"  # Limite máximo de memória que o container pode usar.
+            memory: "2048Mi" 
             cpu: "1000m"
         ports:
         - containerPort: 9091
@@ -724,7 +724,7 @@ data:
     }
 
 ---
-# Grafana Deployment (usando imagem oficial, sem customizações)
+# Grafana Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -815,10 +815,10 @@ spec:
         image: postgres
         resources:
           requests:
-            memory: "512Mi"  # Valor mínimo de memória que o Kubernetes tentará garantir para o container.
+            memory: "512Mi"
             cpu: "500m"
           limits:
-            memory: "2048Mi"  # Limite máximo de memória que o container pode usar.
+            memory: "2048Mi"
             cpu: "1000m"
         ports:
         - containerPort: 5432
